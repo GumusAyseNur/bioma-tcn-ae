@@ -74,7 +74,7 @@ class TCNAE:
         self.activation_conv1d = activation_conv1d
         self.latent_sample_rate = latent_sample_rate
         self.pooler = pooler
-        self.lr = lr
+        self.learning_rate = learning_rate
         self.conv_kernel_init = conv_kernel_init
         self.loss = loss
         self.use_early_stopping = use_early_stopping
@@ -135,7 +135,7 @@ class TCNAE:
 
         model = Model(inputs=[i], outputs=[o])
 
-        adam = optimizers.Adam(lr=self.lr, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0, amsgrad=True)
+        adam = optimizers.Adam(learning_rate=self.learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-08, amsgrad=True)
         model.compile(loss=self.loss, optimizer=adam, metrics=[self.loss])
         if verbose > 1:
             model.summary()
