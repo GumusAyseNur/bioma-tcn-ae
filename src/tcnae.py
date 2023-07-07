@@ -1,4 +1,4 @@
-import utilities
+ing_import utilities
 import numpy
 from tcn import TCN
 import time
@@ -45,7 +45,7 @@ class TCNAE:
                  activation_conv1d = 'linear',
                  latent_sample_rate = 42,
                  pooler = AveragePooling1D,
-                 lr = 0.001,
+                 learning_rate = 0.001,
                  conv_kernel_init = 'glorot_normal',
                  loss = 'logcosh',
                  use_early_stopping = False,
