@@ -163,7 +163,7 @@ class TCNAE:
     
     def predict(self, X_test):
         X_rec =  self.model.predict(X_test)
- 
+        X_rec = numpy.pad(X_rec, ((0, 0), (0, X_test.shape[1] - X_rec.shape[1]), (0, 0)), 'constant')
         E_rec = (X_rec -X_test).squeeze()
         Err = utilities.slide_window(pandas.DataFrame(E_rec), self.error_window_length, verbose = 0)
         Err = Err.reshape(-1, Err.shape[-1]*Err.shape[-2])
