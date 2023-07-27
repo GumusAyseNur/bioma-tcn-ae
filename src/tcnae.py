@@ -141,7 +141,7 @@ class TCNAE:
             model.summary()
         self.model = model
     
-    def fit(self, train_X, train_Y, batch_size=32, epochs=40, verbose = 1):
+    def fit(self,  X_train, y_train, X_valid, y_valid, batch_size=32, epochs=40, verbose = 1):
         my_callbacks = None
         if self.use_early_stopping:
             my_callbacks = [EarlyStopping(monitor='val_loss', patience=2, min_delta=1e-4, restore_best_weights=True)]
@@ -151,22 +151,20 @@ class TCNAE:
             print("> Starting the Training...")
             keras_verbose = 2
         start = time.time()
-        history = self.model.fit(train_X, train_Y, 
+        history = self.model.fit(X_train, y_train,
                             batch_size=batch_size, 
                             epochs=epochs, 
-                            validation_split=0.001, 
+                            validation_data=(X_valid, y_valid),
                             shuffle=True,
                             callbacks=my_callbacks,
                             verbose=keras_verbose)
         if verbose > 0:
             print("> Training Time :", round(time.time() - start), "seconds.")
     
-    def predict(self, test_X):
-        X_rec =  self.model.predict(test_X)
-        
-        # do some padding in the end, since not necessarily the whole time series is reconstructed
-        X_rec = numpy.pad(X_rec, ((0,0),(0, test_X.shape[1] - X_rec.shape[1] ), (0,0)), 'constant') 
-        E_rec = (X_rec - test_X).squeeze()
+    def predict(self, X_test):
+        X_rec =  self.model.predict(X_test)
+ 
+        E_rec = (X_rec -X_test).squeeze()
         Err = utilities.slide_window(pandas.DataFrame(E_rec), self.error_window_length, verbose = 0)
         Err = Err.reshape(-1, Err.shape[-1]*Err.shape[-2])
         sel = numpy.random.choice(range(Err.shape[0]),int(Err.shape[0]*0.98))
