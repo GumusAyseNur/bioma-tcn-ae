@@ -161,17 +161,4 @@ class TCNAE:
         if verbose > 0:
             print("> Training Time :", round(time.time() - start), "seconds.")
     
-    def predict(self, X_test):
-        X_rec =  self.model.predict(X_test)
-        X_rec = numpy.pad(X_rec, ((0, 0), (0, X_test.shape[1] - X_rec.shape[1]), (0, 0)), 'constant')
-        E_rec = (X_rec -X_test).squeeze()
-        Err = utilities.slide_window(pandas.DataFrame(E_rec), self.error_window_length, verbose = 0)
-        Err = Err.reshape(-1, Err.shape[-1]*Err.shape[-2])
-        sel = numpy.random.choice(range(Err.shape[0]),int(Err.shape[0]*0.98))
-        mu = numpy.mean(Err[sel], axis=0)
-        cov = numpy.cov(Err[sel], rowvar = False)
-        sq_mahalanobis = utilities.mahalanobis_distance(X=Err[:], cov=cov, mu=mu)
-        # moving average over mahalanobis distance. Only slightly smooths the signal
-        anomaly_score = numpy.convolve(sq_mahalanobis, numpy.ones((50,))/50, mode='same')
-        anomaly_score = numpy.sqrt(anomaly_score)
-        return anomaly_score
+   
