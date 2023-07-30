@@ -107,7 +107,7 @@ class TCNAE:
         
         tensorflow.keras.backend.clear_session()
         sampling_factor = self.latent_sample_rate
-        i = Input(batch_shape=(None, None, self.ts_dimension))
+        i = Input(batch_shape=(128, None, self.ts_dimension))
 
         # Put signal through TCN. Output-shape: (batch,sequence length, nb_filters)
         tcn_enc = TCN(nb_filters=self.nb_filters, kernel_size=self.kernel_size, nb_stacks=self.nb_stacks, dilations=self.dilations, 
@@ -131,7 +131,7 @@ class TCNAE:
                                 kernel_initializer=self.conv_kernel_init, name='tcn-dec')(dec_upsample)
 
         # Put the filter-outputs through a dense layer finally, to get the reconstructed signal
-        o = Dense(self.ts_dimension, activation='linear')(dec_reconstructed)
+        o = Dense(128, activation='linear')(dec_reconstructed)
 
         model = Model(inputs=[i], outputs=[o])
 
@@ -160,5 +160,12 @@ class TCNAE:
                             verbose=keras_verbose)
         if verbose > 0:
             print("> Training Time :", round(time.time() - start), "seconds.")
-    
+    def predict(self, test_X):
+        X_rec = self.model.predict(test_X)
+
+        # do some padding in the end, since not necessarily the whole time series is reconstructed
+        X_rec = numpy.pad(X_rec, ((0, 0), (0, test_X.shape[1] - X_rec.shape[1]), (0, 0)), 'constant')
+        E_rec = (X_rec - test_X).squeeze()
+        mse = numpy.mean(numpy.square(E_rec), axis=-1)
+        return mse  
    
