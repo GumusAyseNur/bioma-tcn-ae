@@ -107,7 +107,7 @@ class TCNAE:
         
         tensorflow.keras.backend.clear_session()
         sampling_factor = self.latent_sample_rate
-        i = Input(batch_shape=(None, None, self.ts_dimension))
+        i = Input(batch_shape=(None, 128, 1))
 
         # Put signal through TCN. Output-shape: (batch,sequence length, nb_filters)
         tcn_enc = TCN(nb_filters=self.nb_filters, kernel_size=self.kernel_size, nb_stacks=self.nb_stacks, dilations=self.dilations, 
