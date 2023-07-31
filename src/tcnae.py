@@ -107,7 +107,7 @@ class TCNAE:
         
         tensorflow.keras.backend.clear_session()
         sampling_factor = self.latent_sample_rate
-        i = Input(batch_shape=(128, None, self.ts_dimension))
+        i = Input(batch_shape=(None, None, self.ts_dimension))
 
         # Put signal through TCN. Output-shape: (batch,sequence length, nb_filters)
         tcn_enc = TCN(nb_filters=self.nb_filters, kernel_size=self.kernel_size, nb_stacks=self.nb_stacks, dilations=self.dilations, 
@@ -131,7 +131,7 @@ class TCNAE:
                                 kernel_initializer=self.conv_kernel_init, name='tcn-dec')(dec_upsample)
 
         # Put the filter-outputs through a dense layer finally, to get the reconstructed signal
-        o = Dense(128, activation='linear')(dec_reconstructed)
+        o = Dense(None, activation='linear')(dec_reconstructed)
 
         model = Model(inputs=[i], outputs=[o])
 
