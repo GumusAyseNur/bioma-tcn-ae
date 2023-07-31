@@ -1,4 +1,4 @@
-import utilities
+
 import numpy
 from tcn import TCN
 import time
@@ -49,7 +49,7 @@ class TCNAE:
                  conv_kernel_init = 'glorot_normal',
                  loss = 'logcosh',
                  use_early_stopping = False,
-                 error_window_length = 128,
+                 
                  verbose = 1
                 ):
         """
@@ -78,7 +78,7 @@ class TCNAE:
         self.conv_kernel_init = conv_kernel_init
         self.loss = loss
         self.use_early_stopping = use_early_stopping
-        self.error_window_length = error_window_length
+        
         
         # build the model
         self.build_model(verbose = verbose)
@@ -141,7 +141,7 @@ class TCNAE:
             model.summary()
         self.model = model
     
-    def fit(self,  X_train, y_train, batch_size=32, epochs=40, verbose = 1):
+    def fit(self,  X_train, y_train, X_valid, y_valid, batch_size=32, epochs=40, verbose = 1):
         my_callbacks = None
         if self.use_early_stopping:
             my_callbacks = [EarlyStopping(monitor='val_loss', patience=2, min_delta=1e-4, restore_best_weights=True)]
@@ -154,12 +154,23 @@ class TCNAE:
         history = self.model.fit(X_train, y_train,
                             batch_size=batch_size, 
                             epochs=epochs, 
-                            validation_split=0.3,
+                            validation_data=(X_valid, y_valid),
+                            
                             shuffle=True,
                             callbacks=my_callbacks,
                             verbose=keras_verbose)
         if verbose > 0:
             print("> Training Time :", round(time.time() - start), "seconds.")
+            
+    def predict_validation(self, validation_X):
+        X_rec = self.model.predict(validation_X)
+    
+        # do some padding in the end, since not necessarily the whole time series is reconstructed
+        X_rec = numpy.pad(X_rec, ((0, 0), (0, validation_X.shape[1] - X_rec.shape[1]), (0, 0)), 'constant')
+        E_rec = (X_rec - validation_X).squeeze()
+        mse = numpy.mean(numpy.square(E_rec), axis=-1)
+        return mse
+
     def predict(self, test_X):
         X_rec = self.model.predict(test_X)
 
