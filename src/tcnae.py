@@ -47,7 +47,7 @@ class TCNAE:
                  pooler = AveragePooling1D,
                  learning_rate = 0.001,
                  conv_kernel_init = 'glorot_normal',
-                 loss = 'logcosh',
+                 loss = 'mean_squared_error',
                  use_early_stopping = False,
                  
                  verbose = 1
@@ -76,7 +76,7 @@ class TCNAE:
         self.pooler = pooler
         self.learning_rate = learning_rate
         self.conv_kernel_init = conv_kernel_init
-        self.loss = loss
+        self.loss = loss,
         self.use_early_stopping = use_early_stopping
         
         
@@ -136,7 +136,7 @@ class TCNAE:
         model = Model(inputs=[i], outputs=[o])
 
         adam = optimizers.Adam(learning_rate=self.learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-08, amsgrad=True)
-        model.compile(loss=self.loss, optimizer=adam, metrics=[self.loss])
+        model.compile(loss=self.los, optimizer=adam, metrics=[self.loss])
         if verbose > 1:
             model.summary()
         self.model = model
