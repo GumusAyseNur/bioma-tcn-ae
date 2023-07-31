@@ -141,7 +141,7 @@ class TCNAE:
             model.summary()
         self.model = model
     
-    def fit(self,  X_train, y_train, X_valid, y_valid, batch_size=32, epochs=40, verbose = 1):
+    def fit(self,  X_train, X_valid, batch_size=32, epochs=40, verbose = 1):
         my_callbacks = None
         if self.use_early_stopping:
             my_callbacks = [EarlyStopping(monitor='val_loss', patience=2, min_delta=1e-4, restore_best_weights=True)]
@@ -151,10 +151,10 @@ class TCNAE:
             print("> Starting the Training...")
             keras_verbose = 2
         start = time.time()
-        history = self.model.fit(X_train, y_train,
+        history = self.model.fit(X_train,X_train,
                             batch_size=batch_size, 
                             epochs=epochs, 
-                            validation_data=(X_valid, y_valid),
+                            validation_data=(X_valid,X_valid ),
                             
                             shuffle=True,
                             callbacks=my_callbacks,
