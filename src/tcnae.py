@@ -131,7 +131,7 @@ class TCNAE:
                                 kernel_initializer=self.conv_kernel_init, name='tcn-dec')(dec_upsample)
 
         # Put the filter-outputs through a dense layer finally, to get the reconstructed signal
-        o = Dense(None, activation='linear')(dec_reconstructed)
+        o = Dense(self.ts_dimension, activation='linear')(dec_reconstructed)
 
         model = Model(inputs=[i], outputs=[o])
 
