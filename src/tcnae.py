@@ -154,7 +154,7 @@ class TCNAE:
         history = self.model.fit(X_train, y_train,
                             batch_size=batch_size, 
                             epochs=epochs, 
-                            validation_data=(X_valid, y_valid)
+                            validation_split=0.3,
                             shuffle=True,
                             callbacks=my_callbacks,
                             verbose=keras_verbose)
